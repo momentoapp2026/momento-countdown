@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#8e5965">
+<title>Momento — Tu cuenta regresiva</title>
+<style>
+*{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f1ef;color:#302b2b}
+.app{min-height:100vh;padding:16px;display:flex;justify-content:center}.phone{width:100%;max-width:430px;background:#fff;min-height:calc(100vh - 32px);border-radius:30px;overflow:hidden;box-shadow:0 10px 40px #0001}
+.preview{min-height:500px;padding:28px 20px;display:flex;flex-direction:column;justify-content:flex-end;text-align:center;color:white;position:relative;background:linear-gradient(180deg,#0001,#0009),linear-gradient(135deg,#dca9b2,#7f5360);background-size:cover;background-position:center}
+.preview:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0000 30%,#0009)}
+.content{position:relative;z-index:1}.eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;opacity:.85}.preview h1{font:500 38px Georgia,serif;margin:7px 0 6px}.date{font-size:14px;opacity:.9;margin-bottom:22px}
+.count{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.unit{background:#fff2;border:1px solid #fff3;backdrop-filter:blur(8px);border-radius:15px;padding:11px 2px}.num{font-size:25px;font-weight:750}.label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;opacity:.8}
+.form{padding:20px}h2{font:500 24px Georgia,serif;margin:0 0 4px}.small{font-size:12px;color:#8b7c7f;margin:0 0 16px}label{display:block;font-size:13px;font-weight:700;margin:13px 0 7px}input{width:100%;padding:13px;border:1px solid #ddd3d2;border-radius:12px;font-size:16px;background:#fff}
+.upload{border:1.5px dashed #c8afb3;border-radius:14px;padding:14px;text-align:center;cursor:pointer;color:#765b61;background:#fcf8f8}.upload input{display:none}
+.themes{display:flex;gap:7px;overflow:auto;padding-bottom:3px}.theme{flex:0 0 auto;border:2px solid transparent;border-radius:12px;padding:9px 11px;background:#f4eded;font-size:12px;cursor:pointer}.theme.active{border-color:#9c6571}
+button{width:100%;border:0;border-radius:14px;padding:14px;margin-top:16px;background:#8e5965;color:#fff;font-size:16px;font-weight:700}.share{background:#fff;color:#5f4a50;border:1px solid #ddd3d2}
+.gold .preview{background-image:linear-gradient(180deg,#0001,#0009),linear-gradient(135deg,#c9a56a,#66513b)}.blue .preview{background-image:linear-gradient(180deg,#0001,#0009),linear-gradient(135deg,#77a6ca,#334f6a)}.green .preview{background-image:linear-gradient(180deg,#0001,#0009),linear-gradient(135deg,#8db39a,#405d4a)}
+</style>
+</head>
+<body>
+<div class="app" id="app"><main class="phone">
+<section class="preview" id="preview">
+ <div class="content">
+  <div class="eyebrow">Nuestro gran día</div>
+  <h1 id="outTitle">Nuestra Boda 💍</h1>
+  <div class="date" id="outDate">Elige tu fecha</div>
+  <div class="count">
+   <div class="unit"><div class="num" id="d">000</div><div class="label">Días</div></div>
+   <div class="unit"><div class="num" id="h">00</div><div class="label">Horas</div></div>
+   <div class="unit"><div class="num" id="m">00</div><div class="label">Min</div></div>
+   <div class="unit"><div class="num" id="s">00</div><div class="label">Seg</div></div>
+  </div>
+ </div>
+</section>
+<section class="form">
+ <h2>Crea tu momento ✨</h2><p class="small">Personaliza tu cuenta regresiva.</p>
+ <label>Nombre del evento</label><input id="title" value="Nuestra Boda 💍">
+ <label>Fecha y hora</label><input id="date" type="datetime-local">
+ <label>Tu wallpaper</label>
+ <label class="upload">📸 Toca para elegir una foto<input id="photo" type="file" accept="image/*"></label>
+ <label>Estilo</label>
+ <div class="themes"><div class="theme active" data-t="">🌸 Romántico</div><div class="theme" data-t="gold">✨ Elegante</div><div class="theme" data-t="blue">✈️ Viaje</div><div class="theme" data-t="green">🌿 Natural</div></div>
+ <button id="apply">Actualizar mi countdown</button><button class="share" id="share">↗️ Compartir</button>
+</section>
+</main></div>
+<script>
+const app=document.getElementById('app'), title=document.getElementById('title'), date=document.getElementById('date'), photo=document.getElementById('photo');
+let target;
+let n=new Date(); n.setDate(n.getDate()+100); date.value=new Date(n-n.getTimezoneOffset()*60000).toISOString().slice(0,16);
+function apply(){target=new Date(date.value);document.getElementById('outTitle').textContent=title.value||'Mi evento ✨';document.getElementById('outDate').textContent=isNaN(target)?'Elige tu fecha':target.toLocaleString('es-US',{weekday:'long',month:'long',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});tick()}
+function tick(){let x=target-new Date();if(x<0)x=0;document.getElementById('d').textContent=String(Math.floor(x/864e5)).padStart(3,'0');document.getElementById('h').textContent=String(Math.floor(x%864e5/36e5)).padStart(2,'0');document.getElementById('m').textContent=String(Math.floor(x%36e5/6e4)).padStart(2,'0');document.getElementById('s').textContent=String(Math.floor(x%6e4/1e3)).padStart(2,'0')}
+photo.onchange=e=>{const f=e.target.files[0];if(f){const r=new FileReader();r.onload=()=>document.getElementById('preview').style.backgroundImage=`linear-gradient(180deg,#0001,#0009),url("${r.result}")`;r.readAsDataURL(f)}};
+document.querySelectorAll('.theme').forEach(t=>t.onclick=()=>{document.querySelectorAll('.theme').forEach(x=>x.classList.remove('active'));t.classList.add('active');app.className='app '+t.dataset.t});
+document.getElementById('apply').onclick=apply;
+document.getElementById('share').onclick=async()=>{let text=`✨ ${title.value}\n⏳ ${document.getElementById('outDate').textContent}`;if(navigator.share)await navigator.share({title:title.value,text});else{await navigator.clipboard.writeText(text);alert('¡Copiado!')}}
+apply();setInterval(tick,1000);
+</script>
+</body></html>
